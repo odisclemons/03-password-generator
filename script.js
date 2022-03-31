@@ -10,6 +10,8 @@ const specialChars = ["!", "@", "#", "$", "%", "^", "&", "*", "(" , ")", "_", "+
 // by default our password length and number of each character to get
 var passwordLength = 8;
 var numOfEach = 2;
+var optionsSelected = false;
+var useUpperCase, useLowerCase, useNumbers, useSpecialChars;
 
 // Assignment Code
 var generateBtn = document.querySelector("#generate");
@@ -29,6 +31,26 @@ generateBtn.addEventListener("click", writePassword);
 async function generatePassword() {
   let tempPassword = "";
 
+  !optionsSelected ? selectOptions() : null;
+  // I just learned if you simply add those true false values js converts them to integers
+  // So lets add them and divide the password length by the total number of different types of characters
+  // That way we generate an evenly distributed amount of each in the password
+  numOfEach = Math.floor(
+    passwordLength /
+      (useUpperCase + useLowerCase + useNumbers + useSpecialChars)
+  );
+
+  if (useUpperCase) tempPassword += await generateChars(upperCase);
+  if (useLowerCase) tempPassword += await generateChars(lowerCase);
+  if (useNumbers) tempPassword += await generateChars(numbers);
+  if (useSpecialChars) tempPassword += await generateChars(specialChars);
+  optionsSelected = true;
+  tempPassword = await addPadding(tempPassword);
+  tempPassword = await shuffle(tempPassword);
+  return tempPassword;
+}
+
+function selectOptions() {
   // find out how many characters their password should be and then divide each type of allowed character evenly
   // also, keep asking them until you get a valid answer.  default to 8 chars
   do {
@@ -41,27 +63,10 @@ async function generatePassword() {
   } while (isNaN(passwordLength) || passwordLength > 128 || passwordLength < 8);
 
   //prompt ask for each type of character
-  let useUpperCase = confirm("Would you like uppercase characters?");
-  let useLowerCase = confirm("How about lowercase ones?");
-  let useNumbers = confirm("Numbers in your password?");
-  let useSpecialChars = confirm("Would you like special characters?");
-
-  // I just learned if you simply add those true false values js converts them to integers
-  // So lets add them and divide the password length by the total number of different types of characters
-  // That way we generate an evenly distributed amount of each in the password
-  numOfEach = Math.floor(
-    passwordLength /
-      (useUpperCase + useLowerCase + useNumbers + useSpecialChars)
-  );
-  console.log(numOfEach);
-
-  if (useUpperCase) tempPassword += await generateChars(upperCase);
-  if (useLowerCase) tempPassword += await generateChars(lowerCase);
-  if (useNumbers) tempPassword += await generateChars(numbers);
-  if (useSpecialChars) tempPassword += await generateChars(specialChars);
-  tempPassword = await addPadding(tempPassword);
-  tempPassword = await shuffle(tempPassword);
-  return tempPassword;
+  useUpperCase = confirm("Would you like uppercase characters?");
+  useLowerCase = confirm("How about lowercase ones?");
+  useNumbers = confirm("Numbers in your password?");
+  useSpecialChars = confirm("Would you like special characters?");
 }
 
 function generateChars(typeOfChar) {
