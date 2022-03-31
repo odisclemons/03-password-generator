@@ -44,6 +44,14 @@ async function generatePassword() {
   if (useLowerCase) tempPassword += await generateChars(lowerCase);
   if (useNumbers) tempPassword += await generateChars(numbers);
   if (useSpecialChars) tempPassword += await generateChars(specialChars);
+
+  //if all options are false, they didnt select one.  prompt them and try again
+  if (!useUpperCase && !useLowerCase && !useNumbers && !useSpecialChars) {
+    alert("You must select at least 1 type of option for your password.");
+    generatePassword();
+    return;
+  }
+
   optionsSelected = true;
   tempPassword = await addPadding(tempPassword);
   tempPassword = await shuffle(tempPassword);
@@ -62,7 +70,7 @@ function selectOptions() {
     );
   } while (isNaN(passwordLength) || passwordLength > 128 || passwordLength < 8);
 
-  //prompt ask for each type of character
+  //prompt for each type of character
   useUpperCase = confirm("Would you like uppercase characters?");
   useLowerCase = confirm("How about lowercase ones?");
   useNumbers = confirm("Numbers in your password?");
@@ -70,7 +78,7 @@ function selectOptions() {
 }
 
 function generateChars(typeOfChar) {
-  return new Promise((res, rej) => {
+  return new Promise((res) => {
     let tempPassword = "";
     let i = 0;
     let min = typeOfChar[0];
@@ -96,7 +104,7 @@ function randomNum(min, max) {
 
 // shuffle resulting string of characters
 function shuffle(tempPassword) {
-  return new Promise((res, rej) => {
+  return new Promise((res) => {
     // take tempPassword and turn into array using spread operator
     let pwd = [...tempPassword];
     let currentIndex = 0;
@@ -127,8 +135,11 @@ function shuffle(tempPassword) {
 
 // if the passwordLength isnt evenely divisibly by numOfEach, we wont generate the amount of characters
 // the user specified.  The way i'll solve that is by adding random characters until the length is correct
+// I forgot that maybe they want a password of only numbers or something, so instead of
+// just using random lowercase letters, I will take a random character we already picked
+// and just pad the end of the passwor with it
 function addPadding(tempPassword) {
-  return new Promise((res, rej) => {
+  return new Promise((res) => {
     let padding = "";
     let i = 0;
     //if the password is the right length, no need for padding.  just return it
@@ -136,13 +147,12 @@ function addPadding(tempPassword) {
 
     //figure out the difference between the amount of chars we generate vs how many we need
     let difference = passwordLength - tempPassword.length;
-    let min = lowerCase[0];
-    let max = lowerCase[1];
+    let randomChar = [...tempPassword][randomNum(0, tempPassword.length - 1)];
 
-    //loop and generate random lowercase chars
+    //loop and add randomly selected character to end of tempPassword
     do {
       i++;
-      padding += String.fromCharCode(randomNum(min, max));
+      padding += randomChar;
       // when we reach the goal, resolve the promise
       if (i === difference) res(tempPassword + padding);
     } while (i < difference + 1);
