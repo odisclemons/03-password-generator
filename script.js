@@ -7,6 +7,8 @@ const lowerCase = [97, 123];
 //prettier-ignore
 const specialChars = ["!", "@", "#", "$", "%", "^", "&", "*", "(" , ")", "_", "+", ")"];
 
+var passwordLength;
+
 // Assignment Code
 var generateBtn = document.querySelector("#generate");
 
@@ -22,7 +24,7 @@ async function writePassword() {
 generateBtn.addEventListener("click", writePassword);
 
 async function generatePassword() {
-  let tempPassword;
+  let tempPassword = "";
   let numOfChars = 2;
 
   //find out how many characters their password should be and then divide each type of allowed character evenly
@@ -34,7 +36,7 @@ async function generatePassword() {
   //     )
   //   );
   // } while (isNaN(passwordLength) || passwordLength > 128 || passwordLength < 8);
-  passwordLength = 8;
+  passwordLength = 12;
   numOfChars = 0;
 
   let useUpperCase = confirm("Would you like uppercase characters?");
@@ -50,13 +52,16 @@ async function generatePassword() {
     passwordLength /
     (useUpperCase + useLowerCase + useNumbers + useSpecialChars);
 
-  if (useUpperCase) password += await generateChars(uperCase, numOfChars);
-  if (useLowerCase) password += await generateChars(lowerCase, numOfChars);
-  if (useNumbers) password += await generateChars(numbers, numOfChars);
+  if (useUpperCase) tempPassword += await generateChars(uperCase, numOfChars);
+  console.log(tempPassword);
+  if (useLowerCase) tempPassword += await generateChars(lowerCase, numOfChars);
+  console.log(tempPassword);
+  if (useNumbers) tempPassword += await generateChars(numbers, numOfChars);
+  console.log(tempPassword);
   if (useSpecialChars)
-    password += await generateChars(specialChars, numOfChars);
-  console.log(password);
-  return password;
+    tempPassword += await generateChars(specialChars, numOfChars);
+  console.log(tempPassword);
+  return tempPassword;
 }
 
 function generateChars(typeOfChar, numOfChars) {
@@ -72,12 +77,13 @@ function generateChars(typeOfChar, numOfChars) {
         if (i === numOfChars) res(tempPassword);
       } while (i < numOfChars + 1);
     } else {
-      do {
-        i++;
-        tempPassword =
-          tempPassword + specialChars[randomNum(0, specialChars.length - 1)];
-        if (i === numOfChars) res(tempPassword);
-      } while (i < numOfChars + 1);
+      if (numOfChars)
+        do {
+          i++;
+          tempPassword =
+            tempPassword + specialChars[randomNum(0, specialChars.length - 1)];
+          if (i === numOfChars) res(tempPassword);
+        } while (i < numOfChars + 1);
     }
   });
 }
