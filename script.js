@@ -7,7 +7,7 @@ const lowerCase = [97, 123];
 //prettier-ignore
 const specialChars = ["!", "@", "#", "$", "%", "^", "&", "*", "(" , ")", "_", "+", ")"];
 
-var passwordLength;
+var passwordLength = 8;
 var numOfChars = 2;
 
 // Assignment Code
@@ -27,17 +27,15 @@ generateBtn.addEventListener("click", writePassword);
 async function generatePassword() {
   let tempPassword = "";
 
-  //find out how many characters their password should be and then divide each type of allowed character evenly
-  //keep asking them until you get a valid answer also
-  // do {
-  //   var passwordLength = parseInt(
-  //     prompt(
-  //       "How long should your password be? (between 8 and 128 characters only)"
-  //     )
-  //   );
-  // } while (isNaN(passwordLength) || passwordLength > 128 || passwordLength < 8);
-  passwordLength = 14;
-  numOfChars = 0;
+  // find out how many characters their password should be and then divide each type of allowed character evenly
+  // keep asking them until you get a valid answer also
+  do {
+    passwordLength = parseInt(
+      prompt(
+        "How long should your password be? (between 8 and 128 characters only)"
+      )
+    );
+  } while (isNaN(passwordLength) || passwordLength > 128 || passwordLength < 8);
 
   let useUpperCase = confirm("Would you like uppercase characters?");
 
@@ -109,11 +107,12 @@ function addPadding(tempPassword) {
     let difference = passwordLength - tempPassword.length;
     let min = lowerCase[0];
     let max = lowerCase[1];
-
+    console.log(passwordLength, tempPassword.length, difference);
     //loop and generate random lowercase chars
     do {
       i++;
       padding += String.fromCharCode(randomNum(min, max));
+      console.log("padding:", padding);
       if (i === difference) res(tempPassword + padding);
     } while (i < difference + 1);
   });
