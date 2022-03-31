@@ -5,14 +5,7 @@ const numbers = [48, 57];
 const uperCase = [65, 90];
 const lowerCase = [97, 123];
 //prettier-ignore
-const specialCharList = ["!", "@", "#", "$", "%", "^", "&", "*", "(" , ")", "_", "+", ")"];
-
-// for (var code = 32; code < 127; code++) {
-//   var chr = String.fromCharCode(code);
-
-//   var line = chr + "\t" + code + "\t" + code.toString(16).toUpperCase();
-//   console.log(line);
-// }
+const specialChars = ["!", "@", "#", "$", "%", "^", "&", "*", "(" , ")", "_", "+", ")"];
 
 // Assignment Code
 var generateBtn = document.querySelector("#generate");
@@ -42,29 +35,47 @@ async function generatePassword() {
   //   );
   // } while (isNaN(passwordLength) || passwordLength > 128 || passwordLength < 8);
   passwordLength = 8;
-  numOfChars = passwordLength / numOfChars;
+  numOfChars = 0;
 
-  let upperCase = confirm("Would you like uppercase characters?");
-  if (upperCase) password = await generateChars(uperCase, numOfChars);
+  let useUpperCase = confirm("Would you like uppercase characters?");
+
+  let useLowerCase = confirm("How about lowercase ones?");
+  let useNumbers = confirm("Numbers in your password?");
+  let useSpecialChars = confirm("Would you like special characters?");
+
+  // I just learned if you simply add those true false values js converts them to integers
+  // So lets add them and divide the password length by the total number of different types of characters
+  // That way we generate an evenly distributed amount of each in the password
+  numOfChars =
+    passwordLength /
+    (useUpperCase + useLowerCase + useNumbers + useSpecialChars);
+
+  if (useUpperCase) password += await generateChars(uperCase, numOfChars);
+  if (useLowerCase) password += await generateChars(lowerCase, numOfChars);
+  if (useNumbers) password += await generateChars(numbers, numOfChars);
+  if (useSpecialChars)
+    password += await generateChars(specialChars, numOfChars);
   console.log(password);
-  let lowerCase = confirm("How about lowercase ones?");
-  let numbers = confirm("Numbers in your password?");
-  let specialChars = confirm("Would you like special characters?");
-
-  return { upperCase, lowerCase, numbers, specialChars, passwordLength };
+  return password;
 }
 
 function generateChars(typeOfChar, numOfChars) {
   return new Promise((res, rej) => {
     let tempPassword = "";
-
+    let i = 0;
     if (typeOfChar.length === 2) {
-      let i = 0;
       let min = typeOfChar[0];
       let max = typeOfChar[1];
       do {
         i++;
         tempPassword = tempPassword + String.fromCharCode(randomNum(min, max));
+        if (i === numOfChars) res(tempPassword);
+      } while (i < numOfChars + 1);
+    } else {
+      do {
+        i++;
+        tempPassword =
+          tempPassword + specialChars[randomNum(0, specialChars.length - 1)];
         if (i === numOfChars) res(tempPassword);
       } while (i < numOfChars + 1);
     }
@@ -74,3 +85,5 @@ function generateChars(typeOfChar, numOfChars) {
 function randomNum(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+function determineNumOfChars() {}
