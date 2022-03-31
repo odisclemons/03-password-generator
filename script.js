@@ -1,6 +1,6 @@
 // gonna use the ascii table to generate the letters and numbers
 // the corresponding arrays will store the range of each type of character in ascii
-// special characters are kinda split all over the place so i'll hard code an array of them
+// special characters are kinda split all over the place so i'll hard code an array of some
 const numbers = [48, 57];
 const upperCase = [65, 90];
 const lowerCase = [97, 123];
@@ -60,6 +60,7 @@ async function generatePassword() {
   if (useNumbers) tempPassword += await generateChars(numbers);
   if (useSpecialChars) tempPassword += await generateChars(specialChars);
   tempPassword = await addPadding(tempPassword);
+  tempPassword = await shuffle(tempPassword);
   return tempPassword;
 }
 
@@ -83,9 +84,40 @@ function generateChars(typeOfChar) {
   });
 }
 
-// little function from stackOverflow to generate random number between min and max values
+// one-liner from stackOverflow to generate random number between min and max values
 function randomNum(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+// shuffle resulting string of characters
+function shuffle(tempPassword) {
+  return new Promise((res, rej) => {
+    // take tempPassword and turn into array using spread operator
+    let pwd = [...tempPassword];
+    let currentIndex = 0;
+    let len = tempPassword.length;
+
+    // loop through each index in array of characters
+    do {
+      currentIndex++;
+      // pick a random index in the array
+      let randIndex = randomNum(0, len - 1);
+
+      // save that character of the current index temporarily.
+      // we gonna swap it with a random one
+      let temp = pwd[currentIndex];
+
+      // save character at a random index into the current index
+      pwd[currentIndex] = pwd[randIndex];
+
+      // take the character we saved in temp and place it in the random index
+      pwd[randIndex] = temp;
+
+      // if we reached the final index, resolve promise with a joined version of
+      // the pwd array with an empty string. results is the array is one word again
+      if (currentIndex === len) res(pwd.join(""));
+    } while (currentIndex < len);
+  });
 }
 
 // if the passwordLength isnt evenely divisibly by numOfEach, we wont generate the amount of characters
